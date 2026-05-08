@@ -4,10 +4,33 @@ import {
 } from "react-icons/fa6";
 import "./styles/SocialIcons.css";
 import { TbNotes } from "react-icons/tb";
-import { useEffect } from "react";
+import { MouseEvent as ReactMouseEvent, useEffect } from "react";
 import HoverLinks from "./HoverLinks";
 
 const SocialIcons = () => {
+  const handleResumeDownload = async (
+    event: ReactMouseEvent<HTMLAnchorElement>,
+  ) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch("/SparshVyas_Resume.pdf");
+      if (!response.ok) return;
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const tempLink = document.createElement("a");
+      tempLink.href = blobUrl;
+      tempLink.download = "Sparsh-Vyas-Resume.pdf";
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      tempLink.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Resume download failed:", error);
+    }
+  };
+
   useEffect(() => {
     const social = document.getElementById("social") as HTMLElement;
 
@@ -68,7 +91,12 @@ const SocialIcons = () => {
           </a>
         </span>
       </div>
-      <a className="resume-button" href="/SparshVyas_Resume.pdf" download="Sparsh-Vyas-Resume.pdf">
+      <a
+        className="resume-button"
+        href="/SparshVyas_Resume.pdf"
+        download="Sparsh-Vyas-Resume.pdf"
+        onClick={handleResumeDownload}
+      >
         <HoverLinks text="RESUME" />
         <span>
           <TbNotes />
